@@ -1,0 +1,4 @@
+/.gradle/
+/.idea/
+/build-cache/
+/gradle/wrapper/gradle-wrapper.jar
