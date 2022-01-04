@@ -1,0 +1,20 @@
+-- src/main/sqldelight/com/example/sqldelight/hockey/data/Player.sq
+
+CREATE TABLE exchangeEntity (
+  date TEXT NOT NULL,
+  code TEXT NOT NULL,
+  title TEXT NOT NULL,
+  cbPrice REAL NOT NULL,
+  nbuBuyPrice REAL NOT NULL,
+  nbuCellPrice REAL NOT NULL
+);
+
+CREATE INDEX hockeyPlayer_full_name ON exchangeEntity(code);
+
+selectAll:
+SELECT *
+FROM exchangeEntity;
+
+insert:
+INSERT INTO exchangeEntity(date, code, title, cbPrice, nbuBuyPrice, nbuCellPrice)
+VALUES ?;

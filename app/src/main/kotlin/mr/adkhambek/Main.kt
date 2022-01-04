@@ -1,9 +1,14 @@
+package mr.adkhambek
+
+import com.squareup.sqldelight.db.SqlDriver
+import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
+import mrakhambeksqldelight.ExchangeEntity
+import mrakhambeksqldelight.ExchangeRatesQueries
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Node
 import org.jsoup.select.Elements
-import java.io.File
-import java.io.PrintWriter
 import java.util.*
+
 
 data class Exchange(
     val date: String,
@@ -55,23 +60,26 @@ fun main() {
         i += 2
     }
 
-    val listOfData = exchanges
-        .stream()
-        .map {
-            arrayOf<String>(
-                it.title,
-                it.code,
-                it.nbuCellPrice.toString(),
-                it.nbuBuyPrice.toString(),
-                it.cbPrice.toString(),
-                it.date
+
+    val driver: SqlDriver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+    MyDatabase.Schema.create(driver)
+
+    val database = MyDatabase(driver)
+    val exchangeRatesQueries: ExchangeRatesQueries = database.exchangeRatesQueries
+
+    exchanges
+        .forEach {
+            exchangeRatesQueries.insert(
+                ExchangeEntity(
+                    date = it.date,
+                    code = it.code,
+                    title = it.title,
+                    cbPrice = it.cbPrice,
+                    nbuBuyPrice = it.nbuBuyPrice,
+                    nbuCellPrice = it.nbuCellPrice,
+                )
             )
-        }.map {
-            it.joinToString(",")
         }
 
-    val csvOutputFile = File("data.csv")
-    PrintWriter(csvOutputFile).use { pw ->
-        listOfData.forEach(pw::println)
-    }
+    println(exchangeRatesQueries.selectAll().executeAsList())
 }

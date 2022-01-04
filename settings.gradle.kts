@@ -6,3 +6,7 @@ buildCache {
         removeUnusedEntriesAfterDays = 30
     }
 }
+
+include(
+    ":app"
+)

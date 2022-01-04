@@ -3,3 +3,4 @@
 /build-cache/
 /gradle/wrapper/gradle-wrapper.jar
 /build/
+/app/build/
