@@ -5,6 +5,7 @@ import org.jsoup.nodes.Node
 import org.jsoup.select.Elements
 import java.util.*
 
+
 object ExchangeLoader {
 
     operator fun invoke(): List<Exchange> {
