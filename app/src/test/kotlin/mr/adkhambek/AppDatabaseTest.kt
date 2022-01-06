@@ -11,14 +11,14 @@ internal class AppDatabaseTest {
     @Test
     fun `test doesn't throw`() {
         assertDoesNotThrow {
-            AppDatabase.clear()
-            AppDatabase.getExchangeRates()
+            ExchangeDatabase.clear()
+            ExchangeDatabase.getExchangeRates()
         }
     }
 
     @Test
     fun `test save`() {
-        AppDatabase.saveExchangeRates(
+        ExchangeDatabase.saveExchangeRates(
             listOf(
                 ExchangeEntity(
                     date = "Thu Jan 06 04:04:48 UZT 2022",
@@ -31,7 +31,7 @@ internal class AppDatabaseTest {
             )
         )
 
-        assertEquals(AppDatabase.getExchangeRates().size, 1)
-        assertEquals(AppDatabase.getExchangeRates().first().code, "KZT")
+        assertEquals(ExchangeDatabase.getExchangeRates().size, 1)
+        assertEquals(ExchangeDatabase.getExchangeRates().first().code, "KZT")
     }
 }

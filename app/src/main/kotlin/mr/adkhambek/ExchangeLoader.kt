@@ -6,7 +6,7 @@ import org.jsoup.select.Elements
 import java.util.*
 
 
-object ExchangeLoader {
+class ExchangeLoader {
 
     operator fun invoke(): List<Exchange> {
         val doc = Jsoup.connect("https://nbu.uz/en/exchange-rates/").get()

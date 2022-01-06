@@ -11,10 +11,13 @@
 
 ## TZ 3
 * Create GUI application 😅
+  * Get list
+  * Save list
+  * Search list
+  * Search by code
 
-## TZ 4
-* Get list
-* Search by code
+## TZ4 
+* migrate JSON API
 
 ## TZ 5
 * Migrate to Android

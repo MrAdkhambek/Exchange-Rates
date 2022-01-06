@@ -2,7 +2,7 @@
 
 CREATE TABLE exchangeEntity (
   date TEXT NOT NULL,
-  code TEXT NOT NULL,
+  code TEXT NOT NULL UNIQUE PRIMARY KEY,
   title TEXT NOT NULL,
   cbPrice REAL NOT NULL,
   nbuBuyPrice REAL NOT NULL,
@@ -16,8 +16,13 @@ SELECT *
 FROM exchangeEntity;
 
 insert:
-INSERT INTO exchangeEntity(date, code, title, cbPrice, nbuBuyPrice, nbuCellPrice)
+INSERT OR REPLACE INTO exchangeEntity(date, code, title, cbPrice, nbuBuyPrice, nbuCellPrice)
 VALUES ?;
 
 clear:
 DELETE FROM exchangeEntity;
+
+searchByCode:
+SELECT *
+FROM exchangeEntity
+WHERE code = ?;

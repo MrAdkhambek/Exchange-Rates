@@ -5,7 +5,8 @@ import com.squareup.sqldelight.sqlite.driver.JdbcSqliteDriver
 import mrakhambeksqldelight.ExchangeEntity
 import mrakhambeksqldelight.ExchangeRatesQueries
 
-object AppDatabase {
+
+class ExchangeDatabase {
 
     private val exchangeRatesQueries: ExchangeRatesQueries
 
@@ -21,6 +22,10 @@ object AppDatabase {
         list.forEach { entity ->
             exchangeRatesQueries.insert(entity)
         }
+    }
+
+    fun searchByCode(code: String): List<ExchangeEntity> {
+        return exchangeRatesQueries.searchByCode(code).executeAsList()
     }
 
     fun getExchangeRates(): List<ExchangeEntity> = exchangeRatesQueries.selectAll().executeAsList()

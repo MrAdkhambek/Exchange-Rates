@@ -1,79 +1,70 @@
 package mr.adkhambek
 
-import mrakhambeksqldelight.ExchangeEntity
+import kotlinx.coroutines.*
+import mr.adkhambek.network.NetworkModule
+import mr.adkhambek.repository.ExchangeRepository
 import java.util.*
 
 
-class Application {
+class Application(
+    private val coroutinesScope: CoroutineScope,
+    private val exchangeRepository: ExchangeRepository
+) {
 
     private var isFinish = false
 
     fun onStart() {
-        val sc = Scanner(System.`in`)
+        runBlocking {
+            while (!isFinish && this.isActive) {
+                printCommands()
 
-        while (!isFinish) {
-            printCommands()
-            val command = sc.nextLine()
+                val sc = Scanner(System.`in`)
+                val command = sc.nextLine()
 
-            when {
-                command.equals("q" , true) -> isFinish = true
-                command.equals("show" , true) -> handleShow()
-                command.equals("save" , true) -> handleSave()
-                command.equals("read" , true) -> handleRead()
-                command.startsWith("search") -> handleSearch(command)
-                else -> println("Error command")
+                when {
+                    command.equals("q", true) -> isFinish = true
+                    command.equals("show", true) -> handleShow()
+                    command.equals("save", true) -> handleSave()
+                    command.equals("read", true) -> handleRead()
+                    command.startsWith("search") -> handleSearch(command)
+                    else -> println("Error command")
+                }
             }
-
-            println("\n\n")
         }
     }
 
-    private fun handleSearch(command: String) {
+    private suspend fun handleSearch(command: String) {
         val code = command.replace("search ", "")
-        AppDatabase
-            .getExchangeRates()
-            .first {
-                it.code.equals(code, true)
-            }.let {
-                println(it)
-            }
+        val exchange = exchangeRepository.searchExchange(code)
+        exchange.forEach(::println)
     }
 
-    private fun handleRead() {
-        AppDatabase
-            .getExchangeRates()
-            .forEach(::println)
+    private suspend fun handleRead() {
+        exchangeRepository.loadExchanges().forEach(::println)
     }
 
-    private fun handleSave() {
-       val exchanges = ExchangeLoader.invoke()
-        AppDatabase.saveExchangeRates(exchanges.map {
-            ExchangeEntity(
-                date = it.date,
-                code = it.code,
-                title = it.title,
-                cbPrice = it.cbPrice,
-                nbuBuyPrice = it.nbuBuyPrice,
-                nbuCellPrice = it.nbuCellPrice,
-            )
-        })
+    private suspend fun handleSave() {
+        val list = exchangeRepository.loadExchanges()
+        exchangeRepository.saveExchanges(list)
     }
 
-    private fun handleShow() {
-        ExchangeLoader.invoke().forEach(::println)
+    private suspend fun handleShow() {
+        exchangeRepository.loadExchanges().forEach(::println)
     }
 
     private fun printCommands() {
         println("\uD83C\uDC30".repeat(32))
         println("\uD83C\uDC2B 🕹 command     \uD83C\uDC2B comment                   \uD83C\uDC2B")
         println("\uD83C\uDC30".repeat(32))
-        println("""
+        println(
+            """
             🀫 👁 show        🀫 Load and show exchanges   🀫
             🀫 💾 save        🀫 Load and save exchanges   🀫
             🀫 📜 read        🀫 Read exchanges from DB    🀫
             🀫 🔎 search args 🀫 Search exchanges from DB  🀫
             🀫 ❌ q           🀫 Exit                      🀫
-        """.trimIndent())
+        """.trimIndent()
+        )
         println("\uD83C\uDC30".repeat(32))
     }
 
@@ -81,7 +72,20 @@ class Application {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val app = Application()
+            val coroutinesScope = CoroutineScope(SupervisorJob())
+
+            val networkModule = NetworkModule()
+
+            val repository = ExchangeRepository(
+                exchangeLoader = ExchangeLoader(),
+                exchangeDatabase = ExchangeDatabase(),
+                networkAPI = networkModule.networkAPI
+            )
+
+            val app = Application(
+                coroutinesScope = coroutinesScope,
+                exchangeRepository = repository,
+            )
             app.onStart()
         }
     }
