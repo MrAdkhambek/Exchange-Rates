@@ -7,7 +7,6 @@ import java.util.*
 
 
 class Application(
-    private val coroutinesScope: CoroutineScope,
     private val exchangeRepository: ExchangeRepository
 ) {
 
@@ -72,8 +71,6 @@ class Application(
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val coroutinesScope = CoroutineScope(SupervisorJob())
-
             val networkModule = NetworkModule()
 
             val repository = ExchangeRepository(
@@ -83,7 +80,6 @@ class Application(
             )
 
             val app = Application(
-                coroutinesScope = coroutinesScope,
                 exchangeRepository = repository,
             )
             app.onStart()
